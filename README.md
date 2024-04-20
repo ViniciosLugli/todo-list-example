@@ -12,7 +12,7 @@ This project implements a simple ToDo list API in Rust using `TcpListener` for h
 -   Password hashing with `bcrypt`.
 -   JSON serialization with `serde`.
 -   Containerization with Docker.
--   Unit tests for request handling.
+-   Unit tests for all modules.
 
 ## Architecture
 
