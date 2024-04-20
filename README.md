@@ -1,7 +1,5 @@
 # Raw ToDo List API Example
 
-# Raw ToDo List API Example
-
 This project implements a simple ToDo list API in Rust using `TcpListener` for handling HTTP requests without a framework. It utilizes basic HTTP authentication and CRUD operations on ToDo tasks associated with user accounts. The project also demonstrates the use of Rust's `Arc` and `Mutex` for state management across threads.
 
 ## Features
