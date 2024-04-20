@@ -6,6 +6,7 @@ This project implements a simple ToDo list API in Rust using `TcpListener` for h
 
 -   Create, Read, Update, Delete (CRUD) operations on ToDo tasks.
 -   User registration and authentication using HTTP Basic Auth.
+-   Authorization to modify and delete tasks.
 -   Thread-safe state management using `Arc<Mutex<T>>`.
 -   Detailed logging with `pretty_env_logger`.
 -   Password hashing with `bcrypt`.
