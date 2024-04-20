@@ -1,0 +1,10 @@
+FROM rust:latest
+
+WORKDIR /usr/src/app
+
+ENV CARGO_TARGET_DIR=/usr/local/cargo/target
+
+RUN apt-get update && apt-get install -y \
+	libssl-dev \
+	pkg-config \
+	&& rm -rf /var/lib/apt/lists/*

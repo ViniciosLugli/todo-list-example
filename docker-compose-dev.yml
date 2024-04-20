@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile.base
+        tty: true
+        command: cargo run
+        volumes:
+            - .:/usr/src/app
+            - .cache/cargo-cache:/usr/local/cargo/target
+        ports:
+            - '3000:3000'
+        environment:
+            - RUST_LOG=trace
