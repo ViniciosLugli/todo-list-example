@@ -148,3 +148,73 @@ impl Server {
 		}
 	}
 }
+
+#[cfg(test)]
+mod server_tests {
+	use super::*;
+
+	fn setup_user_and_task(server: &Server) -> (String, usize) {
+		let response = server.handle_request("POST /users HTTP/1.1\r\n\r\n{\"username\":\"testuser\",\"password\":\"testpass\"}");
+		assert!(response.contains("User created"));
+
+		let base64_credentials = general_purpose::STANDARD.encode("testuser:testpass".as_bytes());
+		let response =
+			server.handle_request("POST /tasks HTTP/1.1\r\nAuthorization: Basic dGVzdHVzZXI6dGVzdHBhc3M=\r\n\r\n{\"content\":\"test task\"}");
+		assert!(response.contains("Task created"));
+
+		let tasks = server.tasks.lock().unwrap();
+		let task_id = tasks.keys().next().cloned().unwrap();
+		(String::from("Authorization: Basic ") + &base64_credentials, task_id)
+	}
+
+	#[test]
+	fn test_handle_request_post_users() {
+		let server = Server::new();
+		let response = server.handle_request("POST /users HTTP/1.1\r\n\r\n{\"username\":\"testuser\",\"password\":\"testpass\"}");
+		assert!(response.contains("User created"));
+	}
+
+	#[test]
+	fn test_handle_request_get_tasks_unauthorized() {
+		let server = Server::new();
+		let response = server.handle_request("GET /tasks HTTP/1.1\r\n\r\n");
+		assert!(response.contains("401 UNAUTHORIZED"));
+	}
+
+	#[test]
+	fn test_authentication_flow() {
+		let server = Server::new();
+		let (auth_header, _task_id) = setup_user_and_task(&server);
+		let get_response = server.handle_request(&format!("GET /tasks HTTP/1.1\r\n{}\r\n\r\n", auth_header));
+		assert!(get_response.contains("200 OK"));
+	}
+
+	#[test]
+	fn test_handle_request_post_tasks() {
+		let server = Server::new();
+		let (auth_header, _task_id) = setup_user_and_task(&server);
+		let post_response = server.handle_request(&format!("POST /tasks HTTP/1.1\r\n{}\r\n\r\n{{\"content\":\"another task\"}}", auth_header));
+		assert!(post_response.contains("Task created"));
+	}
+
+	#[test]
+	fn test_handle_request_put_tasks() {
+		let server = Server::new();
+		let (auth_header, task_id) = setup_user_and_task(&server);
+
+		let put_response = server.handle_request(&format!(
+			"PUT /tasks/{} HTTP/1.1\r\n{}\r\n\r\n{{\"content\":\"updated task\", \"completed\": true}}",
+			task_id, auth_header
+		));
+		assert!(put_response.contains("Task updated"), "Response was: {}", put_response);
+	}
+
+	#[test]
+	fn test_handle_request_delete_tasks() {
+		let server = Server::new();
+		let (auth_header, task_id) = setup_user_and_task(&server);
+
+		let delete_response = server.handle_request(&format!("DELETE /tasks/{} HTTP/1.1\r\n{}\r\n\r\n", task_id, auth_header));
+		assert!(delete_response.contains("Task deleted"), "Response was: {}", delete_response);
+	}
+}

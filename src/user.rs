@@ -28,3 +28,20 @@ impl From<&User> for PublicUser {
 		PublicUser { username: user.username.clone() }
 	}
 }
+
+#[cfg(test)]
+mod user_tests {
+	use super::*;
+
+	#[test]
+	fn test_user_authentication_success() {
+		let user = User::new("username", "password");
+		assert!(user.authenticate("password"));
+	}
+
+	#[test]
+	fn test_user_authentication_failure() {
+		let user = User::new("username", "password");
+		assert!(!user.authenticate("wrongpassword"));
+	}
+}

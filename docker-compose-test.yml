@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile.base
+        tty: true
+        command: cargo test
+        volumes:
+            - .:/usr/src/app
+            - .cache/cargo-cache:/usr/local/cargo/target

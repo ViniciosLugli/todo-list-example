@@ -15,3 +15,17 @@ impl Task {
 		Task { id, content, completed: false, owner: PublicUser::from(owner) }
 	}
 }
+
+#[cfg(test)]
+mod task_tests {
+	use super::*;
+	use crate::user::User;
+
+	#[test]
+	fn test_create_task() {
+		let user = User::new("testuser", "password");
+		let task = Task::new(1, "Do something".to_string(), &user);
+		assert_eq!(task.content, "Do something");
+		assert!(!task.completed);
+	}
+}
