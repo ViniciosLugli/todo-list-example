@@ -47,8 +47,9 @@ This project implements a simple ToDo list API in Rust using `TcpListener` for h
 
 2. Build and run the project:
     ```sh
-    cargo run --release
+    RUST_LOG=trace cargo run --release
     ```
+    > Note: The `RUST_LOG` environment variable sets the log level. You can set it to `info`, `debug`, or `trace`.
 
 ### Using Docker
 
