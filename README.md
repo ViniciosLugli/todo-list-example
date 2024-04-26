@@ -97,6 +97,8 @@ The server is a simple ToDo list API that allows users to create, read, update, 
 To run the tests, you can use the following commands:
 
 ```sh
+docker compose -f docker-compose-dev.yml up
+# After the server is running you can run the benchmark tests
 docker compose -f docker-compose-benchmark.yml up
 ```
 
