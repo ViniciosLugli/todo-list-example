@@ -85,3 +85,28 @@ Once the server is running, it will listen on `0.0.0.0:3000`. You can interact w
 -   `DELETE /tasks/{id}`: Delete a specific task (requires Basic Auth).
 
 You can find the swagger documentation on [assets/swagger_api.yaml](assets/swagger_api.yaml). also you can use the insomnia file [assets/insomnia_collection.json](assets/insomnia_collection.json) to test the API.
+
+### Behavior of the API requests
+
+Now that the server is running, you can interact with the API using any HTTP client, for the example, we will use `Insomnia` to analyze the behavior of the API requests.
+
+#### Results of the requests
+
+The server is a simple ToDo list API that allows users to create, read, update, and delete tasks using raw TCP connections. The server uses HTTP Basic Auth for user authentication and authorization. The server is running synchronously and uses a single thread to handle incoming connections, because of this, the server can only handle one request at a time, for example, if you try to create a task while the server is processing another request, the server will not respond until the current request is completed and the server is ready to process the next request, this can be tested using the `Insomnia` tool and sending multiple requests at the same time, you will see that the requests are a little slow to respond. You also can use `Curl` with `Bash` to test the API and see the behavior of the requests.
+
+To run the tests, you can use the following commands:
+
+```sh
+docker compose -f docker-compose-benchmark.yml up
+```
+
+the output of the tests will be something like this:
+
+```sh
+benchmark-1  | Total Duration for creating users: 4 ms
+benchmark-1  | Total Duration for creating tasks: 2 ms
+benchmark-1  | Total Duration for getting tasks: 4 ms
+benchmark-1  | All requests have been sent and processed.
+```
+
+all the requests are processed sequentially, this is because the server is running synchronously and uses a single thread to handle incoming connections.
