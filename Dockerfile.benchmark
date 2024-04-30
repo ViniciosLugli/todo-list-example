@@ -1,4 +1,4 @@
-FROM bash:5.1
+FROM bash:5.2
 
 RUN apk add --no-cache curl
 
