@@ -6,7 +6,12 @@ services:
             context: .
             dockerfile: Dockerfile.base
         tty: true
-        command: cargo test
+        command: cargo run --features=${FEATURES}
         volumes:
             - .:/usr/src/app
             - .cache/cargo-cache:/usr/local/cargo/target
+        ports:
+            - '3000:3000'
+        environment:
+            - RUST_LOG=trace
+            - FEATURES=${FEATURES}
