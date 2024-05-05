@@ -1,8 +1,14 @@
 # ToDo List Example
 
-This project implements a simple ToDo list API in Rust using `TcpListener` to handle HTTP requests without a framework. The application can run synchronously or asynchronously, determined by cargo features. It uses `Arc<Mutex<T>>` for thread-safe state management and supports basic HTTP authentication along with CRUD operations for tasks associated with user accounts. The project is containerized with Docker for adaptable deployment and documented using Swagger and Insomnia.
+The project is a simple ToDo list application that allows users to create, read, update, and delete tasks. It includes user registration and authentication using HTTP Basic Auth. Provide by a RESTful API implemented in [Rust](https://www.rust-lang.org/pt-BR) and a mobile dashboard using [Flutter](https://flutter.dev/).
 
-## Features
+This repository consists of two main components: a `backend API` implemented in [Rust](https://www.rust-lang.org/pt-BR) and a `frontend dashboard` using [Flutter](https://flutter.dev/).
+
+## API Component (api/)
+
+This api implements a simple ToDo list API in [Rust](https://www.rust-lang.org/pt-BR) using `TcpListener` to handle HTTP requests without a framework. The application can run synchronously or asynchronously, determined by cargo features. It uses `Arc<Mutex<T>>` for thread-safe state management and supports basic HTTP authentication along with CRUD operations for tasks associated with user accounts. The project is containerized with Docker for adaptable deployment and documented using Swagger and Insomnia.
+
+### Features
 
 -   Create, Read, Update, Delete (CRUD) operations on ToDo tasks.
 -   User registration and authentication using HTTP Basic Auth.
@@ -15,9 +21,9 @@ This project implements a simple ToDo list API in Rust using `TcpListener` to ha
 -   Containerization with Docker.
 -   Unit tests for all modules.
 
-## Architecture
+### Architecture
 
-### Components
+#### Components
 
 -   `main.rs`: Initializes the TCP server and handles incoming connections.
 -   `server.rs`: Defines the `Server` struct and methods for request handling.
@@ -25,7 +31,7 @@ This project implements a simple ToDo list API in Rust using `TcpListener` to ha
 -   `user.rs`: Manages the `User` structure, including password hashing and authentication.
 -   `response.rs`: Utility for constructing HTTP responses.
 
-### Libraries
+#### Libraries
 
 -   `serde`, `serde_json`: For JSON serialization.
 -   `log`, `pretty_env_logger`: For logging.
@@ -33,13 +39,13 @@ This project implements a simple ToDo list API in Rust using `TcpListener` to ha
 -   `base64`: For encoding and decoding Basic Auth headers.
 -   `tokio` and `async-std`: For asynchronous operation.
 
-## Prerequisites
+### Prerequisites
 
 -   Rust (latest stable version) or Docker (for containerized deployment).
 
-## Installation and Running
+### Installation and Running
 
-### Local Setup
+#### Local Setup
 
 1. Get the project:
 
@@ -72,7 +78,7 @@ This project implements a simple ToDo list API in Rust using `TcpListener` to ha
     cargo test
     ```
 
-### Using Docker
+#### Using Docker
 
 -   Run the container for development synchronously:
 
@@ -91,11 +97,11 @@ This project implements a simple ToDo list API in Rust using `TcpListener` to ha
     docker compose -f docker-compose-test.yml up
     ```
 
-## Usage
+### Usage
 
 Once the server is running, it will listen on `0.0.0.0:3000`. You can interact with the API using any HTTP client.
 
-### API Endpoints
+#### API Endpoints
 
 -   `POST /users`: Register a new user.
 -   `POST /tasks`: Create a new task (requires Basic Auth).
@@ -105,7 +111,7 @@ Once the server is running, it will listen on `0.0.0.0:3000`. You can interact w
 
 Swagger documentation is available at [assets/swagger_api.yaml](assets/swagger_api.yaml). Additionally, you can use the Insomnia file [assets/insomnia_collection.json](assets/insomnia_collection.json) to test the API.
 
-## Benchmark Tests
+### Benchmark Tests
 
 Run the benchmark tests with Docker after starting the server:
 
@@ -122,8 +128,39 @@ benchmark-1  | Total Duration for getting tasks: 5 ms
 benchmark-1  | All requests have been sent and processed.
 ```
 
-### Abount the Benchmark tests results
+#### Abount the Benchmark tests results
 
 -   All the requests are processed sequentially due to the server running synchronously and using a single thread to handle incoming connections. You can switch between synchronous and asynchronous modes by setting the `FEATURES` environment variable accordingly before executing commands.
 -   The benchmark tests are designed to measure the server's performance under a high load of requests. The server will process 1000 requests for creating users, 1000 requests for creating tasks, and 1000 requests for getting tasks. The total duration for each operation is displayed at the end of the test.
 -   The synchronous server is expected to take longer to process all requests compared to the asynchronous server due to the single-threaded nature of the former. While the asynchronous server can handle multiple requests concurrently, providing better performance under high loads.
+
+## Dashboard Component (`dashboard/`)
+
+### Overview
+
+A mobile application template in Flutter designed for the ToDo List project. It includes necessary setups for a streamlined development process with a focus on usability and adaptability for developers.
+
+### Used Tools
+
+-   Flutter, Dart, Android Studio, Visual Studio Code, Git.
+
+### Setup and Installation
+
+Follow the detailed setup instructions in the [Flutter Mobile Template README](https://github.com/ViniciosLugli/flutter-mobile-template) to set up the Flutter project and configure the development environment with Android Studio.
+
+### Running the Project
+
+1. Navigate to the dashboard directory:
+
+    ```sh
+    cd todo-list-example/dashboard
+    ```
+
+2. Install dependencies and set up the environment:
+
+    - Install Flutter dependencies: `flutter pub get`
+    - Set up Android Studio and configure emulators.
+
+3. Launch and run the project on an emulator:
+    - Configure and launch an emulator: `flutter emulators --launch <device_name>`
+    - Run the project: `flutter run`
