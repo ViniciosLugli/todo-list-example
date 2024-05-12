@@ -164,3 +164,9 @@ Follow the detailed setup instructions in the [Flutter Mobile Template README](h
 3. Launch and run the project on an emulator:
     - Configure and launch an emulator: `flutter emulators --launch <device_name>`
     - Run the project: `flutter run`
+
+## Demo
+
+The following video demonstrates the ToDo List project in action:
+
+[demo.webm](https://github.com/ViniciosLugli/todo-list-example/assets/40807526/ec303809-c90d-404a-9d0f-fa71017f1dfa)

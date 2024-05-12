@@ -7,4 +7,5 @@ ENV CARGO_TARGET_DIR=/usr/local/cargo/target
 RUN apt-get update && apt-get install -y \
 	libssl-dev \
 	pkg-config \
+	libpq-dev \
 	&& rm -rf /var/lib/apt/lists/*

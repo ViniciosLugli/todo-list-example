@@ -6,10 +6,9 @@ services:
             context: .
             dockerfile: Dockerfile.base
         tty: true
-        command: cargo test --features=${FEATURES}
+        command: sh -c "cargo prisma generate && cargo test"
         volumes:
             - .:/usr/src/app
             - .cache/cargo-cache:/usr/local/cargo/target
-        environment:
-            - RUST_LOG=trace
-            - FEATURES=${FEATURES}
+        env_file:
+            - .env

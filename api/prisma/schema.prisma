@@ -1,0 +1,31 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "cargo prisma"
+    output   = "../src/db.rs"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    uuid     String @id @default(uuid())
+    name     String
+    email    String @unique
+    password String
+    Task     Task[]
+}
+
+model Task {
+    cuid        String   @id @default(cuid())
+    title       String
+    description String
+    done        Boolean  @default(false)
+    userUuid    String
+    user        User     @relation(fields: [userUuid], references: [uuid])
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now())
+}

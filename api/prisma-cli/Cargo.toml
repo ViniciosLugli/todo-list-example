@@ -1,0 +1,18 @@
+[package]
+name = "prisma-cli"
+version = "0.1.0"
+edition = "2021"
+authors = ["ViniciosLugli <vinicioslugli@gmail.com>"]
+
+[dependencies]
+serde = { version = "1.0.200" }
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.11", features = [
+	"postgresql",
+	"migrations",
+	"mocking",
+] }
+prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.11", features = [
+	"postgresql",
+	"migrations",
+	"mocking",
+] }

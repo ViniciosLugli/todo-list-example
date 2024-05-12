@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile.base
+        tty: true
+        command: sh -c "cargo prisma generate && cargo run --release"
+        volumes:
+            - .:/usr/src/app
+            - .cache/cargo-cache:/usr/local/cargo/target
+        ports:
+            - '3000:3000'

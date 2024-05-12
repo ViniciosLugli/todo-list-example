@@ -1,17 +1,24 @@
 version: '3.8'
 
 services:
+    postgres:
+        extends:
+            file: docker-compose-db.yml
+            service: postgres
     app:
         build:
             context: .
             dockerfile: Dockerfile.base
         tty: true
-        command: cargo run --features=${FEATURES}
+        command: sh -c "cargo prisma generate && cargo run"
         volumes:
             - .:/usr/src/app
             - .cache/cargo-cache:/usr/local/cargo/target
+        depends_on:
+            - 'postgres'
         ports:
             - '3000:3000'
+        env_file:
+            - .env
         environment:
-            - RUST_LOG=trace
-            - FEATURES=${FEATURES}
+            DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres?schema=public

@@ -1,0 +1,8 @@
+target
+**/*.md
+.git
+.gitignore
+.vscode
+renovate.json
+.cache
+src/db.rs

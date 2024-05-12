@@ -1,8 +1,0 @@
-FROM bash:5.2
-
-RUN apk add --no-cache curl
-
-COPY benchmark.sh benchmark.sh
-
-RUN chmod +x benchmark.sh
-
