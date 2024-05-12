@@ -20,6 +20,8 @@ This api implements a simple ToDo list API in [Rust](https://www.rust-lang.org/p
 
 ### Architecture
 
+The API is structured as a RESTful web service with the following components:
+
 #### Components
 
 -   `main.rs`: Initializes the server and routes requests to the appropriate handlers.
@@ -129,6 +131,17 @@ A mobile application template in Flutter designed for the ToDo List project. It 
 
 -   [Flutter](https://flutter.dev/): A UI toolkit for building natively compiled applications for mobile, web, and desktop from a single codebase.
 -   [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge) A Flutter plugin for calling Rust functions from Dart.
+
+### Architecture
+
+The Flutter project is structured as a mobile application with the following components:
+
+#### Components
+
+The app is divided into two main components:
+
+-   [dart sources](./dashboard/lib/): Initializes the Flutter app and routes requests to the appropriate screens.
+-   [rust sources](./dashboard/rust/): Contains the Rust code that will be called from the Flutter app.
 
 ### Setup and Installation
 
