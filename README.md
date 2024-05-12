@@ -10,12 +10,13 @@ This api implements a simple ToDo list API in [Rust](https://www.rust-lang.org/p
 
 ### Features
 
--   User creation and authentication using JSON Web Tokens (JWT).
--   Create, Read, Update, Delete (CRUD) operations on ToDo tasks.
--   Asynchronous operation using the Tokio runtime.
--   Logging with the `log` crate and `pretty_env_logger`.
--   Password hashing using the `bcrypt` crate.
--   JSON serialization using the `serde` crate.
+-   User creation and authentication using JSON Web Tokens (JWT) for secure access to the API.
+-   Create, Read, Update, Delete (CRUD) operations on ToDo tasks with persistent storage in a PostgreSQL database and permissions based on user authentication.
+-   Asynchronous operation using the Tokio runtime for efficient handling of multiple concurrent requests.
+-   Password hashing using the `bcrypt` crate for secure storage of user credentials in the database.
+-   Fully integrates with Serde for robust data serialization and deserialization. This feature simplifies exchanging JSON data between servers and clients, seamlessly mapping Rust structures to JSON format and vice versa.
+-   Uses `dotenvy` to manage environment variables through a `.env` file, streamlining the configuration process and ensuring sensitive credentials are kept out of the code.
+-   Incorporates `pretty_env_logger`, an environment-aware logger for detailed and configurable logging that helps in monitoring and debugging the application efficiently during development and in production.
 
 ### Architecture
 
@@ -64,13 +65,34 @@ This api implements a simple ToDo list API in [Rust](https://www.rust-lang.org/p
     cd todo-list-example/api
     ```
 
-2. Build and run the project:
+2. Set environment variables:
+
+    Copy the `.env.example` file to `.env` and fill in the required values:
+
+    ```sh
+    cp .env.example .env
+    ```
+
+    Update the `.env` file with the required values if necessary:
+
+    ```sh
+    # JWT secret key
+    JWT_SECRET="SUPERSECRET"
+
+    # Server log level
+    RUST_LOG=info
+
+    # Database URL of docker container
+    DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
+    ```
+
+3. Build and run the project:
 
     ```sh
     RUST_LOG=trace cargo run --release
     ```
 
-3. Run the tests:
+4. Run the tests:
     ```sh
     cargo test
     ```
