@@ -16,7 +16,11 @@ class ApiClientInstance {
 class Singleton {
   static Future<ApiClient> get instance async {
     final apiUrl = dotenv.env['API_URL'];
-    return await ApiClientInstance.newInstance(
-        baseUrl: apiUrl ?? 'http://localhost:3000');
+
+    if (apiUrl == null) {
+      throw Exception('API_URL is not set');
+    }
+
+    return await ApiClientInstance.newInstance(baseUrl: apiUrl);
   }
 }

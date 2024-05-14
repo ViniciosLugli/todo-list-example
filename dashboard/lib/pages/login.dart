@@ -28,6 +28,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   var apiClient = Singleton.instance;
+
   String _email = '';
   String _password = '';
 
@@ -75,14 +76,45 @@ class _LoginFormState extends State<LoginForm> {
             ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  var json = jsonDecode(await (await apiClient).loginUser(
-                    email: _email,
-                    password: _password,
-                  ));
+                  try {
+                    final response = await ((await apiClient).loginUser)(
+                      email: _email,
+                      password: _password,
+                    );
+                    final json = jsonDecode(response);
 
-                  if (json['status_code'] != 200) {
+                    if (json['status_code'] != 200) {
+                      Fluttertoast.showToast(
+                        msg: "Invalid email or password",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                      return;
+                    } else {
+                      Fluttertoast.showToast(
+                        msg: "Login successful",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const TaskList()),
+                      );
+                    }
+                  } catch (e) {
+                    print('Error during login: $e');
                     Fluttertoast.showToast(
-                      msg: "Invalid email or password",
+                      msg: "Error during login",
                       toastLength: Toast.LENGTH_SHORT,
                       gravity: ToastGravity.BOTTOM,
                       timeInSecForIosWeb: 1,
@@ -90,22 +122,6 @@ class _LoginFormState extends State<LoginForm> {
                       textColor: Colors.white,
                       fontSize: 16.0,
                     );
-                    return;
-                  } else {
-                    Fluttertoast.showToast(
-                      msg: "Login successful",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.green,
-                      textColor: Colors.white,
-                      fontSize: 16.0,
-                    );
-
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const TaskList()));
                   }
                 }
               },

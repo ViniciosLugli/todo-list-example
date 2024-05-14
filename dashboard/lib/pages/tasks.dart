@@ -1,31 +1,63 @@
-import 'package:dashboard/pages/new_task.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:dashboard/client/singleton.dart';
+import 'package:dashboard/pages/new_task.dart';
 import 'package:dashboard/pages/edit_task.dart';
-import 'dart:convert';
+import 'package:dashboard/src/rust/api/client.dart';
 
 class TaskList extends StatefulWidget {
-  const TaskList({Key? key}) : super(key: key);
+  const TaskList({super.key});
 
   @override
   _TaskListState createState() => _TaskListState();
 }
 
 class _TaskListState extends State<TaskList> {
-  late Future<List<Map<String, dynamic>>> _tasks = _loadTasks();
+  late Future<List<Map<String, dynamic>>> _tasks;
+  late ApiClient _apiClient;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshTasks();
+  }
+
+  Future<void> _refreshTasks() async {
+    _initializeApiClient();
+
+    setState(() {
+      _tasks = _loadTasks();
+    });
+  }
+
+  Future<void> _initializeApiClient() async {
+    _apiClient = await Singleton.instance;
+  }
 
   Future<List<Map<String, dynamic>>> _loadTasks() async {
-    final apiClient = await Singleton.instance;
-    final response = await apiClient.findAllTasks();
+    try {
+      final response = await _apiClient.findAllTasks();
 
-    final json = jsonDecode(response);
-    if (json['status_code'] == 200) {
-      final tasks = json['tasks'] as List<dynamic>;
-      return tasks.cast<Map<String, dynamic>>();
-    } else {
+      final json = jsonDecode(response);
+      if (json['status_code'] == 200) {
+        final tasks = json['tasks'] as List<dynamic>;
+        return tasks.cast<Map<String, dynamic>>();
+      } else {
+        Fluttertoast.showToast(
+          msg: "Failed to load tasks",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        return [];
+      }
+    } catch (e) {
       Fluttertoast.showToast(
-        msg: "Failed to load tasks",
+        msg: "An error occurred: $e",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -35,12 +67,6 @@ class _TaskListState extends State<TaskList> {
       );
       return [];
     }
-  }
-
-  Future<void> _refreshTasks() async {
-    setState(() {
-      _tasks = _loadTasks();
-    });
   }
 
   @override
@@ -96,12 +122,11 @@ class TaskCard extends StatelessWidget {
   final Map<String, dynamic> task;
   final VoidCallback refreshTasks;
 
-  const TaskCard({Key? key, required this.task, required this.refreshTasks})
-      : super(key: key);
+  const TaskCard({super.key, required this.task, required this.refreshTasks});
 
   @override
   Widget build(BuildContext context) {
-    task['updatedAt'] =
+    final updatedAt =
         DateTime.parse(task['updatedAt']).toString().substring(0, 19);
     return Card(
       margin: const EdgeInsets.all(10),
@@ -144,7 +169,7 @@ class TaskCard extends StatelessWidget {
                 ),
               ),
               Text(
-                'Last updated: ${task['updatedAt']}',
+                'Last updated: $updatedAt',
                 style: const TextStyle(
                   fontSize: 12,
                 ),
@@ -152,7 +177,7 @@ class TaskCard extends StatelessWidget {
             ],
           ),
           trailing: IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () {
               showDialog(
                 context: context,
@@ -170,25 +195,37 @@ class TaskCard extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () async {
-                          final apiClient = await Singleton.instance;
-                          final response =
-                              await apiClient.deleteTask(cuid: task['cuid']);
-                          final json = jsonDecode(response);
-                          if (json['status_code'] == 200) {
-                            Navigator.pop(context);
+                          try {
+                            final apiClient = await Singleton.instance;
+                            final response =
+                                await apiClient.deleteTask(cuid: task['cuid']);
+                            final json = jsonDecode(response);
+                            if (json['status_code'] == 200) {
+                              Navigator.pop(context);
+                              Fluttertoast.showToast(
+                                msg: "Task deleted",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.green,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                              refreshTasks();
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: "Failed to delete task",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            }
+                          } catch (e) {
                             Fluttertoast.showToast(
-                              msg: "Task deleted",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.green,
-                              textColor: Colors.white,
-                              fontSize: 16.0,
-                            );
-                            refreshTasks();
-                          } else {
-                            Fluttertoast.showToast(
-                              msg: "Failed to delete task",
+                              msg: "An error occurred: $e",
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               timeInSecForIosWeb: 1,

@@ -1,9 +1,9 @@
 import 'dart:convert';
-
-import 'package:dashboard/pages/login.dart';
-import 'package:dashboard/client/singleton.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:dashboard/client/singleton.dart';
+import 'package:dashboard/pages/login.dart';
+import 'package:dashboard/src/rust/api/client.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -27,11 +27,25 @@ class RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-  final _formKey = GlobalKey<FormState>();
-  var apiClient = Singleton.instance;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  late ApiClient _apiClient;
   String _name = '';
   String _email = '';
   String _password = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApiClient();
+  }
+
+  Future<void> _initializeApiClient() async {
+    _apiClient = await Singleton.instance;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +57,7 @@ class _RegisterFormState extends State<RegisterForm> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             TextFormField(
+              controller: _nameController,
               keyboardType: TextInputType.text,
               decoration: const InputDecoration(labelText: 'Name'),
               validator: (value) {
@@ -59,6 +74,7 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
             const SizedBox(height: 20.0),
             TextFormField(
+              controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(labelText: 'Email'),
               validator: (value) {
@@ -75,6 +91,7 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
             const SizedBox(height: 20.0),
             TextFormField(
+              controller: _passwordController,
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
               validator: (value) {
@@ -91,43 +108,7 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  var json = jsonDecode(await (await apiClient).registerUser(
-                    name: _name,
-                    email: _email,
-                    password: _password,
-                  ));
-
-                  if (json['status_code'] != 201) {
-                    Fluttertoast.showToast(
-                      msg: json['error'],
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.red,
-                      textColor: Colors.white,
-                      fontSize: 16.0,
-                    );
-                    return;
-                  }
-
-                  Fluttertoast.showToast(
-                    msg: "User registered successfully! Please login.",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.green,
-                    textColor: Colors.white,
-                    fontSize: 16.0,
-                  );
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                }
-              },
+              onPressed: _registerUser,
               child: const Text('Register'),
             ),
             const SizedBox(height: 20.0),
@@ -144,5 +125,64 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
       ),
     );
+  }
+
+  Future<void> _registerUser() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        var json = jsonDecode(await _apiClient.registerUser(
+          name: _name,
+          email: _email,
+          password: _password,
+        ));
+
+        if (json['status_code'] != 201) {
+          Fluttertoast.showToast(
+            msg: json['error'],
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+          return;
+        }
+
+        Fluttertoast.showToast(
+          msg: "User registered successfully! Please login.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      } catch (e) {
+        print('Error during registration: $e');
+        Fluttertoast.showToast(
+          msg: "Error during registration",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }

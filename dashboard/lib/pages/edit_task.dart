@@ -1,9 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:dashboard/client/singleton.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter/material.dart';
+import 'package:dashboard/src/rust/api/client.dart';
 
 class TaskEditPage extends StatefulWidget {
   final Map<String, dynamic> task;
@@ -17,13 +16,21 @@ class TaskEditPage extends StatefulWidget {
 class _TaskEditPageState extends State<TaskEditPage> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+  late bool _isTaskDone;
+  late ApiClient _apiClient;
 
   @override
   void initState() {
     super.initState();
+    _initializeApiClient();
     final task = widget.task;
     _titleController = TextEditingController(text: task['title']);
     _descriptionController = TextEditingController(text: task['description']);
+    _isTaskDone = task['done'];
+  }
+
+  Future<void> _initializeApiClient() async {
+    _apiClient = await Singleton.instance;
   }
 
   @override
@@ -59,10 +66,10 @@ class _TaskEditPageState extends State<TaskEditPage> {
                 ),
                 const SizedBox(height: 10),
                 ToggleButtons(
-                  isSelected: [widget.task['done'], !widget.task['done']],
+                  isSelected: [_isTaskDone, !_isTaskDone],
                   onPressed: (index) {
                     setState(() {
-                      widget.task['done'] = index == 0;
+                      _isTaskDone = index == 0;
                     });
                   },
                   children: const [
@@ -74,39 +81,53 @@ class _TaskEditPageState extends State<TaskEditPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                final task = widget.task;
-
-                final apiClient = await Singleton.instance;
-                var response = await apiClient.updateTask(
-                    cuid: task["cuid"],
-                    title: _titleController.text,
-                    description: _descriptionController.text,
-                    done: task["done"]);
-
-                final json = jsonDecode(response);
-
-                if (json['status_code'] != 200) {
-                  Fluttertoast.showToast(
-                    msg: json['error'],
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.red,
-                    textColor: Colors.white,
-                    fontSize: 16.0,
-                  );
-                  return;
-                } else {
-                  Navigator.pop(context, true);
-                }
-              },
+              onPressed: _saveTask,
               child: const Text('Save'),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _saveTask() async {
+    final task = widget.task;
+
+    try {
+      var response = await _apiClient.updateTask(
+        cuid: task["cuid"],
+        title: _titleController.text,
+        description: _descriptionController.text,
+        done: _isTaskDone,
+      );
+
+      final json = jsonDecode(response);
+
+      if (json['status_code'] != 200) {
+        Fluttertoast.showToast(
+          msg: json['error'],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else {
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      print('Error during task update: $e');
+      Fluttertoast.showToast(
+        msg: "Error during task update",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
   }
 
   @override

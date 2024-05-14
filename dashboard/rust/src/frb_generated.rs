@@ -54,15 +54,15 @@ let api_title = <String>::sse_decode(&mut deserializer);
 let api_description = <String>::sse_decode(&mut deserializer);deserializer.end(); move |context| async move {
                     transform_result_sse((move || async move {
                         let mut api_that_decoded = None;
-let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, false)]);
+let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, true)]);
         for i in decode_indices_ {
             match i {
-                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref().await),
+                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref_mut().await),
                 _ => unreachable!(),
             }
         }
-        let api_that = api_that_decoded.unwrap();
- crate::api::client::APIClient::create_task(&api_that, &api_title, &api_description).await
+        let mut api_that = api_that_decoded.unwrap();
+ crate::api::client::APIClient::create_task(&mut api_that, &api_title, &api_description).await
                     })().await)
                 } })
 }
@@ -79,15 +79,15 @@ fn wire_ApiClient_delete_task_impl(
 let api_cuid = <String>::sse_decode(&mut deserializer);deserializer.end(); move |context| async move {
                     transform_result_sse((move || async move {
                         let mut api_that_decoded = None;
-let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, false)]);
+let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, true)]);
         for i in decode_indices_ {
             match i {
-                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref().await),
+                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref_mut().await),
                 _ => unreachable!(),
             }
         }
-        let api_that = api_that_decoded.unwrap();
- crate::api::client::APIClient::delete_task(&api_that, &api_cuid).await
+        let mut api_that = api_that_decoded.unwrap();
+ crate::api::client::APIClient::delete_task(&mut api_that, &api_cuid).await
                     })().await)
                 } })
 }
@@ -103,15 +103,15 @@ fn wire_ApiClient_find_all_tasks_impl(
             let api_that = <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<APIClient>>>::sse_decode(&mut deserializer);deserializer.end(); move |context| async move {
                     transform_result_sse((move || async move {
                         let mut api_that_decoded = None;
-let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, false)]);
+let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, true)]);
         for i in decode_indices_ {
             match i {
-                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref().await),
+                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref_mut().await),
                 _ => unreachable!(),
             }
         }
-        let api_that = api_that_decoded.unwrap();
- crate::api::client::APIClient::find_all_tasks(&api_that).await
+        let mut api_that = api_that_decoded.unwrap();
+ crate::api::client::APIClient::find_all_tasks(&mut api_that).await
                     })().await)
                 } })
 }
@@ -128,15 +128,15 @@ fn wire_ApiClient_find_task_impl(
 let api_cuid = <String>::sse_decode(&mut deserializer);deserializer.end(); move |context| async move {
                     transform_result_sse((move || async move {
                         let mut api_that_decoded = None;
-let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, false)]);
+let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, true)]);
         for i in decode_indices_ {
             match i {
-                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref().await),
+                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref_mut().await),
                 _ => unreachable!(),
             }
         }
-        let api_that = api_that_decoded.unwrap();
- crate::api::client::APIClient::find_task(&api_that, &api_cuid).await
+        let mut api_that = api_that_decoded.unwrap();
+ crate::api::client::APIClient::find_task(&mut api_that, &api_cuid).await
                     })().await)
                 } })
 }
@@ -248,15 +248,15 @@ fn wire_ApiClient_get_user_info_impl(
             let api_that = <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<APIClient>>>::sse_decode(&mut deserializer);deserializer.end(); move |context| async move {
                     transform_result_sse((move || async move {
                         let mut api_that_decoded = None;
-let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, false)]);
+let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, true)]);
         for i in decode_indices_ {
             match i {
-                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref().await),
+                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref_mut().await),
                 _ => unreachable!(),
             }
         }
-        let api_that = api_that_decoded.unwrap();
- crate::api::client::APIClient::get_user_info(&api_that).await
+        let mut api_that = api_that_decoded.unwrap();
+ crate::api::client::APIClient::get_user_info(&mut api_that).await
                     })().await)
                 } })
 }
@@ -333,15 +333,15 @@ let api_email = <String>::sse_decode(&mut deserializer);
 let api_password = <String>::sse_decode(&mut deserializer);deserializer.end(); move |context| async move {
                     transform_result_sse((move || async move {
                         let mut api_that_decoded = None;
-let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, false)]);
+let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, true)]);
         for i in decode_indices_ {
             match i {
-                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref().await),
+                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref_mut().await),
                 _ => unreachable!(),
             }
         }
-        let api_that = api_that_decoded.unwrap();
- crate::api::client::APIClient::register_user(&api_that, &api_name, &api_email, &api_password).await
+        let mut api_that = api_that_decoded.unwrap();
+ crate::api::client::APIClient::register_user(&mut api_that, &api_name, &api_email, &api_password).await
                     })().await)
                 } })
 }
@@ -361,15 +361,15 @@ let api_description = <String>::sse_decode(&mut deserializer);
 let api_done = <bool>::sse_decode(&mut deserializer);deserializer.end(); move |context| async move {
                     transform_result_sse((move || async move {
                         let mut api_that_decoded = None;
-let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, false)]);
+let decode_indices_ = flutter_rust_bridge::for_generated::rust_auto_opaque_decode_compute_order(vec![api_that.rust_auto_opaque_lock_order_info(0, true)]);
         for i in decode_indices_ {
             match i {
-                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref().await),
+                0 => api_that_decoded = Some(api_that.rust_auto_opaque_decode_async_ref_mut().await),
                 _ => unreachable!(),
             }
         }
-        let api_that = api_that_decoded.unwrap();
- crate::api::client::APIClient::update_task(&api_that, &api_cuid, &api_title, &api_description, api_done).await
+        let mut api_that = api_that_decoded.unwrap();
+ crate::api::client::APIClient::update_task(&mut api_that, &api_cuid, &api_title, &api_description, api_done).await
                     })().await)
                 } })
 }

@@ -168,7 +168,29 @@ Follow the detailed setup instructions in the [Flutter Mobile Template README](h
     - Set up Android Studio and configure emulators.
     - Install the Rust bridge: `cargo install 'flutter_rust_bridge_codegen@^2.0.0-dev.33`
 
-3. Launch and run the project on an emulator:
+3. Set the environment variables:
+
+    Copy the `.env.example` file to `.env` and fill in the required values:
+
+    ```sh
+    cp .env.example .env
+    ```
+
+    Update the `.env` file with the required values:
+
+    ```sh
+    API_URL = "http://YOUR_API_IP:3000"
+    ```
+
+    If you are running the API locally, you can use the command:
+
+    ```sh
+    hostname -I
+    ```
+
+    This command will return the IP address of your machine. Use this IP address in the `.env` file.
+
+4. Launch and run the project on an emulator:
     - Configure and launch an emulator: `flutter emulators --launch <device_name>`
     - Run the project: `flutter_rust_bridge_codegen generate && flutter run`
 

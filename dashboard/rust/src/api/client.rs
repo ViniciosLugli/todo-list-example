@@ -22,14 +22,12 @@ impl APIClient {
         }
     }
 
-    async fn parse_response(&self, response: reqwest::Response) -> Result<String, String> {
+    async fn parse_response(&mut self, response: reqwest::Response) -> Result<String, String> {
         let status = response.status();
-        let json: Value;
-
-        match response.json::<Value>().await {
-            Ok(value) => json = value,
+        let json: Value = match response.json::<Value>().await {
+            Ok(value) => value,
             Err(e) => return Err(e.to_string()),
-        }
+        };
 
         let mut json_obj = json.as_object().unwrap().clone();
         json_obj.insert("status_code".to_string(), json!(status.as_u16()));
@@ -37,7 +35,12 @@ impl APIClient {
 
         if status.is_client_error() || status.is_server_error() {
             println!("Error: {}", json);
+        } else {
+            if let Some(token) = json["token"].as_str() {
+                self.jwt_bearer = Some(token.to_string());
+            }
         }
+
         Ok(json.to_string())
     }
 
@@ -49,8 +52,59 @@ impl APIClient {
         self.jwt_bearer.clone().unwrap_or_default()
     }
 
-    pub async fn register_user(
+    async fn send_request(
         &self,
+        method: reqwest::Method,
+        url: String,
+        params: Option<serde_json::Value>,
+    ) -> Result<reqwest::Response, String> {
+        let mut request_builder = self.client.request(method, &url);
+
+        if let Some(token) = &self.jwt_bearer {
+            request_builder = request_builder.header("Authorization", format!("Bearer {}", token));
+        }
+
+        let request = if let Some(params) = params {
+            request_builder.json(&params).build()
+        } else {
+            request_builder.build()
+        }
+        .map_err(|e| e.to_string())?;
+
+        self.client
+            .execute(request)
+            .await
+            .map_err(|e| e.to_string())
+    }
+
+    async fn send_get_request(&self, url: String) -> Result<reqwest::Response, String> {
+        self.send_request(reqwest::Method::GET, url, None).await
+    }
+
+    async fn send_post_request(
+        &self,
+        url: String,
+        params: serde_json::Value,
+    ) -> Result<reqwest::Response, String> {
+        self.send_request(reqwest::Method::POST, url, Some(params))
+            .await
+    }
+
+    async fn send_put_request(
+        &self,
+        url: String,
+        params: serde_json::Value,
+    ) -> Result<reqwest::Response, String> {
+        self.send_request(reqwest::Method::PUT, url, Some(params))
+            .await
+    }
+
+    async fn send_delete_request(&self, url: String) -> Result<reqwest::Response, String> {
+        self.send_request(reqwest::Method::DELETE, url, None).await
+    }
+
+    pub async fn register_user(
+        &mut self,
         name: &str,
         email: &str,
         password: &str,
@@ -61,14 +115,7 @@ impl APIClient {
             "email": email,
             "password": password,
         });
-        let response = self
-            .client
-            .post(&url)
-            .json(&params)
-            .send()
-            .await
-            .map_err(|e| e.to_string())
-            .map_err(|e| e.to_string())?;
+        let response = self.send_post_request(url, params).await?;
         self.parse_response(response).await
     }
 
@@ -78,71 +125,29 @@ impl APIClient {
             "email": email,
             "password": password,
         });
-        let response = self
-            .client
-            .post(&url)
-            .json(&params)
-            .send()
-            .await
-            .map_err(|e| e.to_string())
-            .map_err(|e| e.to_string())?;
+        let response = self.send_post_request(url, params).await?;
 
-        let json: Value;
-        let status = response.status();
-        match response.json::<Value>().await {
-            Ok(value) => json = value,
-            Err(e) => return Err(e.to_string()),
-        }
-
-        let mut json_obj = json.as_object().unwrap().clone();
-        json_obj.insert("status_code".to_string(), json!(status.as_u16()));
-        let json = json!(json_obj);
-
-        if status.is_success() {
-            let token = json["token"].as_str().unwrap();
-            self.jwt_bearer = Some(token.to_string());
-        }
-
-        Ok(json.to_string())
-    }
-
-    pub async fn get_user_info(&self) -> Result<String, String> {
-        let url = format!("{}/user/info", self.base_url);
-        let response = self
-            .client
-            .get(&url)
-            .header(
-                "Authorization",
-                format!("Bearer {}", self.jwt_bearer.as_ref().unwrap()),
-            )
-            .send()
-            .await
-            .map_err(|e| e.to_string())?;
         self.parse_response(response).await
     }
 
-    pub async fn create_task(&self, title: &str, description: &str) -> Result<String, String> {
+    pub async fn get_user_info(&mut self) -> Result<String, String> {
+        let url = format!("{}/user/info", self.base_url);
+        let response = self.send_get_request(url).await?;
+        self.parse_response(response).await
+    }
+
+    pub async fn create_task(&mut self, title: &str, description: &str) -> Result<String, String> {
         let url = format!("{}/task/", self.base_url);
         let params = json!({
             "title": title,
             "description": description,
         });
-        let response = self
-            .client
-            .post(&url)
-            .header(
-                "Authorization",
-                format!("Bearer {}", self.jwt_bearer.as_ref().unwrap()),
-            )
-            .json(&params)
-            .send()
-            .await
-            .map_err(|e| e.to_string())?;
+        let response = self.send_post_request(url, params).await?;
         self.parse_response(response).await
     }
 
     pub async fn update_task(
-        &self,
+        &mut self,
         cuid: &str,
         title: &str,
         description: &str,
@@ -154,62 +159,25 @@ impl APIClient {
             "description": description,
             "done": done,
         });
-        let response = self
-            .client
-            .put(&url)
-            .header(
-                "Authorization",
-                format!("Bearer {}", self.jwt_bearer.as_ref().unwrap()),
-            )
-            .json(&params)
-            .send()
-            .await
-            .map_err(|e| e.to_string())?;
+        let response = self.send_put_request(url, params).await?;
         self.parse_response(response).await
     }
 
-    pub async fn delete_task(&self, cuid: &str) -> Result<String, String> {
+    pub async fn delete_task(&mut self, cuid: &str) -> Result<String, String> {
         let url = format!("{}/task/{}", self.base_url, cuid);
-        let response = self
-            .client
-            .delete(&url)
-            .header(
-                "Authorization",
-                format!("Bearer {}", self.jwt_bearer.as_ref().unwrap()),
-            )
-            .send()
-            .await
-            .map_err(|e| e.to_string())?;
+        let response = self.send_delete_request(url).await?;
         self.parse_response(response).await
     }
 
-    pub async fn find_task(&self, cuid: &str) -> Result<String, String> {
+    pub async fn find_task(&mut self, cuid: &str) -> Result<String, String> {
         let url = format!("{}/task/{}", self.base_url, cuid);
-        let response = self
-            .client
-            .get(&url)
-            .header(
-                "Authorization",
-                format!("Bearer {}", self.jwt_bearer.as_ref().unwrap()),
-            )
-            .send()
-            .await
-            .map_err(|e| e.to_string())?;
+        let response = self.send_get_request(url).await?;
         self.parse_response(response).await
     }
 
-    pub async fn find_all_tasks(&self) -> Result<String, String> {
+    pub async fn find_all_tasks(&mut self) -> Result<String, String> {
         let url = format!("{}/task/", self.base_url);
-        let response = self
-            .client
-            .get(&url)
-            .header(
-                "Authorization",
-                format!("Bearer {}", self.jwt_bearer.as_ref().unwrap()),
-            )
-            .send()
-            .await
-            .map_err(|e| e.to_string())?;
+        let response = self.send_get_request(url).await?;
         self.parse_response(response).await
     }
 }
