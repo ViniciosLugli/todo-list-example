@@ -213,10 +213,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: "3c74dbf8763d36539f114c799d8a2d87343b5067e9d796ca22b5eb8437090ee3"
+      sha256: bdb68674043280c3428e9ec998512fb681678676b3c54e773629ffe74419f8c7
       url: "https://pub.dev"
     source: hosted
-    version: "1.9.1"
+    version: "1.15.0"
   mime:
     dependency: transitive
     description:
@@ -389,10 +389,10 @@ packages:
     dependency: "direct main"
     description:
       name: toml
-      sha256: "9968de24e45b632bf1a654fe1ac7b6fe5261c349243df83fd262397799c45a2d"
+      sha256: d968d149c8bd06dc14e09ea3a140f90a3f2ba71949e7a91df4a46f3107400e71
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.0"
+    version: "0.16.0"
   typed_data:
     dependency: transitive
     description:
