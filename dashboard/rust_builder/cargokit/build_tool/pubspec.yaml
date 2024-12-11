@@ -20,7 +20,7 @@ dependencies:
   ed25519_edwards: 0.3.1
   hex: 0.2.0
   yaml: 3.1.2
-  source_span: 1.10.0
+  source_span: 1.10.1
   github: 9.24.0
   args: 2.6.0
   crypto: 3.0.6
