@@ -19,7 +19,7 @@ prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust
 	"mocking",
 ] }
 tokio = { version = "1.37.0", features = ["full"] }
-bcrypt = "0.16.0"
+bcrypt = "0.17.0"
 jsonwebtoken = "9.3.0"
 chrono = { version = "0.4.30", features = ["serde"] }
 
