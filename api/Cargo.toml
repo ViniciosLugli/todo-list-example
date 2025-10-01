@@ -20,7 +20,7 @@ prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust
 ] }
 tokio = { version = "1.37.0", features = ["full"] }
 bcrypt = "0.17.0"
-jsonwebtoken = "9.3.0"
+jsonwebtoken = "10.0.0"
 chrono = { version = "0.4.30", features = ["serde"] }
 
 [workspace]
