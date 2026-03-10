@@ -6,5 +6,6 @@
 	"semanticCommits": "enabled",
 	"prCreation": "not-pending",
 	"labels": ["type: dependencies"],
-	"automerge": true
+	"automerge": true,
+	"enabled": false
 }
